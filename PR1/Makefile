@@ -1,17 +1,24 @@
-CC=gcc
-CFLAGS=-Wall -O2 -g
-LIBDIRS=-L/usr/lib -L/home/sani0kk/mylibs
-LIBS=-lprocess1 -lprocess
+CC = gcc
+CFLAGS = -g -O2
+LDFLAGS = -L/usr/lib -lprocess1 -L~/mylibs -lprocess
+OBJ = main.o input.o output.o
+TARGET = my_program
 
-OBJS=input.o output.o
+all: $(TARGET)
 
-all: my_program
+$(TARGET): $(OBJ)
+	$(CC) $(OBJ) $(LDFLAGS) -o $(TARGET)
 
-my_program: main.c $(OBJS)
-	$(CC) $(CFLAGS) main.c $(OBJS) $(LIBDIRS) $(LIBS) -o my_program
+main.o: main.c input.h output.h process1.h process.h
+	$(CC) $(CFLAGS) -c main.c
 
-%.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+input.o: input.c input.h
+	$(CC) $(CFLAGS) -c input.c
+
+output.o: output.c output.h
+	$(CC) $(CFLAGS) -c output.c
 
 clean:
-	rm -f *.o my_program
+	rm -f *.o $(TARGET)
+
+.PHONY: all clean
