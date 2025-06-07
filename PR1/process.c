@@ -1,4 +1,5 @@
-#include <stdio.h>
-void process() {
-    printf("Processing (from ~/mylibs/process.c)\n");
+#include "process.h"
+
+int process(int value) {
+    return value + 10;
 }
