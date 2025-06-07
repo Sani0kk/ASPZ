@@ -25,52 +25,10 @@ ulimit -n 3000
 ```
 
 ### З root-правами
-Повторіть усі команди з `sudo`.
+Повторити усі команди з `sudo`.
 
 ### Скріншот
-![Скріншот завдання 3.1](task3_1_screenshot.png)
-
-## Завдання 3.2: Експерименти з `perf`
-
-### Опис
-Встановлюємо `perf` і перевіряємо ліміт відкритих файлів.
-
-### Код
-```c
-#include <stdio.h>
-#include <fcntl.h>
-#include <unistd.h>
-
-int main() {
-    int fd[1000];
-    for (int i = 0; i < 1000; i++) {
-        fd[i] = open("/dev/null", O_RDONLY);
-        if (fd[i] < 0) {
-            printf("Помилка при відкритті файлу %d\n", i);
-            break;
-        }
-    }
-    for (int i = 0; i < 1000; i++) {
-        if (fd[i] >= 0) close(fd[i]);
-    }
-    return 0;
-}
-```
-
-### Компіляція
-```sh
-gcc -o task3_2 task3_2.c
-```
-
-### Використання
-```sh
-apt-get update && apt-get install -y linux-tools-common
-ulimit -n 100
-perf stat ./task3_2
-```
-
-### Скріншот
-![Скріншот завдання 3.2](task3_2_screenshot.png)
+![image](https://github.com/user-attachments/assets/812ca7e8-d96f-44fa-b68c-c642b4e592d2)
 
 ## Завдання 3.3: Імітація кидання кубика
 
@@ -107,18 +65,8 @@ int main() {
 }
 ```
 
-### Компіляція
-```sh
-gcc -o task3_3 task3_3.c
-```
-
-### Виконання
-```sh
-ulimit -f 1024 && ./task3_3
-```
-
 ### Скріншот
-![Скріншот завдання 3.3](task3_3_screenshot.png)
+![image](https://github.com/user-attachments/assets/b942ae2e-bbab-41f4-8138-b204898d0dc9)
 
 ## Завдання 3.4: Імітація лотереї
 
@@ -156,18 +104,8 @@ int main() {
 }
 ```
 
-### Компіляція
-```sh
-gcc -o task3_4 task3_4.c
-```
-
-### Виконання
-```sh
-ulimit -t 1 && ./task3_4
-```
-
 ### Скріншот
-![Скріншот завдання 3.4](task3_4_screenshot.png)
+![image](https://github.com/user-attachments/assets/b4eb04c7-f9bc-480f-9879-d317b56bf457)
 
 ## Завдання 3.5: Копіювання файлу
 
@@ -214,18 +152,8 @@ int main(int argc, char *argv[]) {
 }
 ```
 
-### Компіляція
-```sh
-gcc -o task3_5 task3_5.c
-```
-
-### Виконання
-```sh
-ulimit -f 1024 && ./task3_5 source.txt dest.txt
-```
-
 ### Скріншот
-![Скріншот завдання 3.5](task3_5_screenshot.png)
+![image](https://github.com/user-attachments/assets/c7891248-c1cc-4050-9ce1-7d1cc509f2ea)
 
 ## Завдання 3.6: Обмеження стеку
 
@@ -253,18 +181,8 @@ int main() {
 }
 ```
 
-### Компіляція
-```sh
-gcc -o task3_6 task3_6.c
-```
-
-### Виконання
-```sh
-ulimit -s 8192 && ./task3_6
-```
-
 ### Скріншот
-![Скріншот завдання 3.6](task3_6_screenshot.png)
+![image](https://github.com/user-attachments/assets/bc21876f-6622-46ad-aa42-3ee0332edf79)
 
 ## Завдання 3.7: Обмеження віртуальної пам’яті
 
@@ -293,18 +211,8 @@ int main() {
 }
 ```
 
-### Компіляція
-```sh
-gcc -o task3_7 task3_7.c
-```
-
-### Виконання
-```sh
-ulimit -v 1024 && ./task3_7
-```
-
 ### Скріншот
-![Скріншот завдання 3.7](task3_7_screenshot.png)
+![image](https://github.com/user-attachments/assets/07c16617-21aa-4898-aad4-82ac086fa200)
 
 ## Висновок
-Досліджено налаштування лімітів ресурсів у Docker і C, включаючи файли, стек, пам’ять і CPU, із відповідною обробкою перевищень.
+Досліджено налаштування лімітів ресурсів у C, включаючи файли, стек, пам’ять і CPU, із відповідною обробкою перевищень.
