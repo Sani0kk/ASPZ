@@ -48,7 +48,8 @@ chmod +x compile_run.sh
 ```
 
 ### Скріншот
-![Скріншот завдання 6.1](task6_1_screenshot.png)
+![image](https://github.com/user-attachments/assets/9548e1b4-a9e4-4723-8b61-87ee375b56e2)
+![image](https://github.com/user-attachments/assets/3ea1e071-620a-4433-9614-c0ef78aee605)
 
 ## Висновок
 Дізналися, як скрипт із `valgrind` допомагає знаходити витоки пам’яті.
