@@ -1,4 +1,9 @@
 #include <stdio.h>
-void input() {
-    printf("Input function called\n");
+#include "input.h"
+
+int get_input() {
+    int value;
+    printf("Введіть число: ");
+    scanf("%d", &value);
+    return value;
 }
