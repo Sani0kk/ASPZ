@@ -39,7 +39,7 @@ int main() {
 ```
 
 #### Скріншот виконання
-- ![Скріншот виконання завдання 8.1](task8_1_screenshot.png)
+![image](https://github.com/user-attachments/assets/a1d09c4a-7ebf-482f-88bf-404045735dff)
 
 ---
 
@@ -89,7 +89,7 @@ int main() {
 ```
 
 #### Скріншот виконання
-- ![Скріншот виконання завдання 8.1](task8_1_screenshot.png)
+![image](https://github.com/user-attachments/assets/9649eaf7-3c63-43de-b1fb-47a227aed657)
 
 ---
 
@@ -148,7 +148,7 @@ int main() {
 ```
 
 #### Скріншот виконання
-- ![Скріншот виконання завдання 8.1](task8_1_screenshot.png)
+![image](https://github.com/user-attachments/assets/7136a1de-dbfa-4729-9a84-54b716e509c3)
 
 ---
 
@@ -173,7 +173,7 @@ int main() {
 ```
 
 #### Скріншот виконання
- ![Скріншот виконання завдання 8.1](task8_1_screenshot.png)
+![image](https://github.com/user-attachments/assets/24bba96d-ba35-4526-92b1-3ea29544ff10)
 
 ---
 
@@ -206,7 +206,8 @@ int main() {
 ```
 
 #### Скріншот виконання
-- ![Скріншот виконання завдання 8.1](task8_1_screenshot.png)
+![image](https://github.com/user-attachments/assets/b9e602ff-6689-407f-9066-cb8b4f8e6d0d)
+![image](https://github.com/user-attachments/assets/ee7b73cd-90cf-48d7-b47c-3fa091cc0635)
 
 ---
 
