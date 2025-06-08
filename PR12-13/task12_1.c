@@ -33,7 +33,7 @@ int main() {
     }
     write(fd, "123", 3); // Записуємо 3 байти
     ftruncate(fd, 3); // Обмежуємо розмір файлу до 3 байтів
-    void *addr = mmap(NULL, 4096, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+    void *addr = mmap(NULL, 512, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0); // Менший розмір
     if (addr == MAP_FAILED) {
         perror("Помилка mmap");
         close(fd);
@@ -41,9 +41,9 @@ int main() {
     }
     printf("Відображено: %p\n", addr);
     char *p = (char *)addr;
-    p[0] = 'A'; // Доступ до відображеної пам’яті — нормально
+    p[0] = 'A'; // Доступ до валідної пам’яті
     printf("Записано: %c\n", p[0]);
-    p[3] = 'B'; // Спроба запису за межами файлу (викликає SIGBUS)
+    p[4] = 'B'; // Спроба запису за межами (викликає SIGBUS)
     close(fd);
     return 0;
 }
