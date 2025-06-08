@@ -8,7 +8,8 @@ volatile sig_atomic_t counter = 0;
 
 void timer_handler(int signum) {
     counter++;
-    printf("Лічильник: %d\n", counter);
+    printf("Лічильник: %ld\n", (long)counter); // Використано %ld для long int
+    fflush(stdout); // Примусове виведення
 }
 
 int main() {
@@ -24,9 +25,9 @@ int main() {
     }
 
     timer.it_value.tv_sec = 0;
-    timer.it_value.tv_usec = 100000;
+    timer.it_value.tv_usec = 100000; // Початковий інтервал 100 мс
     timer.it_interval.tv_sec = 0;
-    timer.it_interval.tv_usec = 100000;
+    timer.it_interval.tv_usec = 100000; // Періодичне спрацьовування 100 мс
 
     if (setitimer(ITIMER_REAL, &timer, NULL) == -1) {
         perror("setitimer");
