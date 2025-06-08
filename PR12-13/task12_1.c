@@ -33,6 +33,7 @@ int main() {
         return 1;
     }
 
+    // Викликає SIGBUS при доступі
     ftruncate(fd, 0);
 
     struct sigaction sa;
