@@ -78,6 +78,8 @@ int main() {
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <string.h>
+#include <errno.h>
 
 int main() {
     const char *source = "user_temp.txt";
@@ -124,8 +126,9 @@ int main() {
     return 0;
 }
 ```
+
 ### Скріншот виконання
-![Скріншот завдання 9.3](task9_3_screenshot.png)
+![image](https://github.com/user-attachments/assets/d82337d3-05cf-4373-92f8-5a2343666bc0)
 
 ## Завдання 9.4: Перевірка стану облікового запису
 ### Опис
@@ -163,7 +166,7 @@ int main() {
 }
 ```
 ### Скріншот виконання
-![Скріншот завдання 9.4](task9_4_screenshot.png)
+![image](https://github.com/user-attachments/assets/ea99e49a-0683-483a-bae7-af3c75b5b81d)
 
 ## Завдання 9.5: Створення та зміна тимчасового файлу
 ### Опис
@@ -175,6 +178,7 @@ int main() {
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <errno.h>
 
 int main() {
     const char *temp_file = "test_temp.txt";
@@ -215,7 +219,7 @@ int main() {
 }
 ```
 ### Скріншот виконання
-![Скріншот завдання 9.5](task9_5_screenshot.png)
+![image](https://github.com/user-attachments/assets/60a28bb3-4264-4f48-9289-b7881d898660)
 
 ## Завдання 9.6: Виконання ls -l для різних каталогів
 ### Опис
@@ -253,7 +257,7 @@ int main() {
 }
 ```
 ### Скріншот виконання
-![Скріншот завдання 9.6](task9_6_screenshot.png)
+![image](https://github.com/user-attachments/assets/d472eb24-f8c7-44a6-b6a9-3de033e75c96)
 
 ## Завдання 9.7: Читання файлу без прав
 ### Опис
@@ -264,6 +268,8 @@ int main() {
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <string.h>
+#include <errno.h>
 
 int main() {
     const char *file = "no_access.txt";
@@ -272,7 +278,11 @@ int main() {
         perror("Помилка створення файлу");
         exit(EXIT_FAILURE);
     }
-    write(fd, "Конфіденційні дані", 18);
+    if (write(fd, "Конфіденційні дані", 18) < 0) {
+        perror("Помилка запису");
+        close(fd);
+        exit(EXIT_FAILURE);
+    }
     close(fd);
 
     fd = open(file, O_RDONLY);
@@ -280,16 +290,22 @@ int main() {
         printf("Читання неможливе: %s\n", strerror(errno));
     } else {
         char buf[256];
-        read(fd, buf, sizeof(buf));
-        printf("Вміст: %s\n", buf);
+        ssize_t bytes_read = read(fd, buf, sizeof(buf) - 1);
+        if (bytes_read < 0) {
+            perror("Помилка читання");
+        } else {
+            buf[bytes_read] = '\0';
+            printf("Вміст: %s\n", buf);
+        }
         close(fd);
     }
 
     return 0;
 }
 ```
+
 ### Скріншот виконання
-![Скріншот завдання 9.7](task9_7_screenshot.png)
+![image](https://github.com/user-attachments/assets/4fdc93d1-648c-4ccb-b173-49ea74ddb34f)
 
 ## Висновок
 Дізналися, як управляти доступом до файлів, перевіряти користувачів і демонструвати поведінку прав на FreeBSD.
