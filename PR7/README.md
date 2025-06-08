@@ -36,18 +36,8 @@ int main() {
 ```
 **Пояснення**: Програма бере дані про файли з теки і показує їх, як список.
 
-### Компіляція
-```sh
-gcc -Wall -o task7_2 task7_2.c
-```
-
-### Виконання
-```sh
-./task7_2
-```
-
 ### Скріншот
-![Скріншот завдання 7.2](task7_2_screenshot.png)
+![image](https://github.com/user-attachments/assets/b5ac25da-dde9-425f-914b-afdc69e9d632)
 
 ## Завдання 7.3: Проста версія `grep`
 
@@ -81,18 +71,8 @@ int main(int argc, char *argv[]) {
 ```
 **Пояснення**: Програма читає файл і показує рядки з заданим словом.
 
-### Компіляція
-```sh
-gcc -Wall -o task7_3 task7_3.c
-```
-
-### Виконання
-```sh
-./task7_3 test.txt слово
-```
-
 ### Скріншот
-![Скріншот завдання 7.3](task7_3_screenshot.png)
+![image](https://github.com/user-attachments/assets/c2bcffcb-db5b-4851-97d0-785efbb2e58e)
 
 ## Завдання 7.4: Спрощена версія `more`
 
