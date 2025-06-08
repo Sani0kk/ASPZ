@@ -1,79 +1,81 @@
-# Практична робота №12-13: Обробка SIGBUS
+# Практична робота №12: Обробка SIGBUS
 
 ## Мета роботи
-Дізнатися, як обробляти помилки доступу до пам’яті через SIGBUS.
+Дізнатися, як обробляти сигнали SIGBUS при роботі з відображенням пам’яті через `mmap`.
 
-## Завдання 12-13.1: Обробник SIGBUS для `mmap` і фізичної пам’яті
+## Завдання 12.1: Обробник SIGBUS для `mmap`
 
 ### Опис
-Створюємо обробник, який розрізняє помилки від `mmap` і фізичної пам’яті.
+Ця програма демонструє обробку сигналу SIGBUS, який виникає при спробі доступу до некоректно відображеної пам’яті. Використовується `mmap` для відображення файлу, а обробник розрізняє причини SIGBUS (наприклад, `BUS_ADRERR` або `BUS_OBJERR`).
 
 ### Код
 ```c
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
-#include <unistd.h>
 #include <sys/mman.h>
 #include <fcntl.h>
+#include <unistd.h>
+#include <string.h>
+#include <errno.h>
 
 void sigbus_handler(int sig, siginfo_t *info, void *context) {
+    printf("SIGBUS caught!\n");
     if (info->si_code == BUS_ADRERR) {
-        printf("Помилка SIGBUS: Невірна адреса (фізична пам’ять), адреса: %p\n", info->si_addr);
+        printf("BUS_ADRERR: invalid address alignment.\n");
     } else if (info->si_code == BUS_OBJERR) {
-        printf("Помилка SIGBUS: Помилка об’єкта (mmap), адреса: %p\n", info->si_addr);
+        printf("BUS_OBJERR: hardware error accessing object (file I/O).\n");
     } else {
-        printf("Невідома помилка SIGBUS, адреса: %p\n", info->si_addr);
+        printf("Other SIGBUS cause: si_code = %d\n", info->si_code);
     }
-    exit(1);
+    exit(EXIT_FAILURE);
 }
 
 int main() {
-    struct sigaction sa;
-    sa.sa_sigaction = sigbus_handler;
-    sa.sa_flags = SA_SIGINFO;
-    sigemptyset(&sa.sa_mask);
-    if (sigaction(SIGBUS, &sa, NULL) == -1) {
-        perror("Помилка встановлення обробника");
+    const char *filename = "test_file.txt";
+    int fd = open(filename, O_RDWR | O_CREAT, 0666);
+    if (fd < 0) {
+        perror("open");
         return 1;
     }
 
-    int fd = open("test.txt", O_RDWR | O_CREAT | O_TRUNC, 0644);
-    if (fd == -1) {
-        perror("Помилка відкриття файлу");
+    const char *content = "Test content\n";
+    if (write(fd, content, strlen(content)) < 0) {
+        perror("write");
         return 1;
     }
-    write(fd, "123", 3);
-    void *addr = mmap(NULL, 4096, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-    if (addr == MAP_FAILED) {
-        perror("Помилка mmap");
-        close(fd);
+
+    // Викликає SIGBUS при доступі
+    ftruncate(fd, 0);
+
+    struct sigaction sa;
+    sa.sa_sigaction = sigbus_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = SA_SIGINFO;
+
+    if (sigaction(SIGBUS, &sa, NULL) == -1) {
+        perror("sigaction");
         return 1;
     }
-    printf("Відображено: %p\n", addr);
-    char *p = (char *)addr;
-    p[0] = 'A';
-    printf("Записано: %c\n", p[0]);
-    p += 4096;
-    *p = 'B';
+
+    char *map = mmap(NULL, 4096, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+    if (map == MAP_FAILED) {
+        perror("mmap");
+        return 1;
+    }
+
+    printf("Trying to write to mapped memory...\n");
+    map[0] = 'X';
+
+    munmap(map, 4096);
     close(fd);
     return 0;
 }
 ```
-**Пояснення**: Програма ловить помилки, коли пам’ять не працює правильно, і показує, чи проблема в файлі, чи в пам’яті.
-
-### Компіляція
-```sh
-gcc -Wall -o task12_1 task12_1.c
-```
-
-### Виконання
-```sh
-./task12_1
-```
+**Пояснення**: Програма створює файл, записує в нього дані, відображає його в пам’ять через `mmap`, а потім викликає SIGBUS через `ftruncate`, який обнуляє розмір файлу, після чого доступ до `map[0]` має викликати помилку.
 
 ### Скріншот
-![Скріншот завдання 12-13.1](task12_1_screenshot.png)
+![image](https://github.com/user-attachments/assets/cd0b3801-e5ec-44c1-bcc6-7e9e141982ea)
 
 ## Висновок
-Дізналися, як обробляти SIGBUS і розрізняти його причини.
+Дізналися, як обробляти SIGBUS при роботі з відображенням пам’яті та як відрізняти причини помилок.
