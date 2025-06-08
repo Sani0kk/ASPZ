@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <string.h>  // Для strerror
+#include <errno.h>   // Для errno
 
 int main() {
     const char *file = "no_access.txt";
@@ -10,7 +12,11 @@ int main() {
         perror("Помилка створення файлу");
         exit(EXIT_FAILURE);
     }
-    write(fd, "Конфіденційні дані", 18);
+    if (write(fd, "Конфіденційні дані", 18) < 0) {
+        perror("Помилка запису");
+        close(fd);
+        exit(EXIT_FAILURE);
+    }
     close(fd);
 
     fd = open(file, O_RDONLY);
@@ -18,8 +24,13 @@ int main() {
         printf("Читання неможливе: %s\n", strerror(errno));
     } else {
         char buf[256];
-        read(fd, buf, sizeof(buf));
-        printf("Вміст: %s\n", buf);
+        ssize_t bytes_read = read(fd, buf, sizeof(buf) - 1); // -1 для нульового терміну
+        if (bytes_read < 0) {
+            perror("Помилка читання");
+        } else {
+            buf[bytes_read] = '\0'; // Додаємо нульовий термінатор
+            printf("Вміст: %s\n", buf);
+        }
         close(fd);
     }
 
