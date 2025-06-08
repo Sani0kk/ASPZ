@@ -1,49 +1,60 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
-#include <unistd.h>
 #include <sys/mman.h>
 #include <fcntl.h>
+#include <unistd.h>
+#include <string.h>
+#include <errno.h>
 
 void sigbus_handler(int sig, siginfo_t *info, void *context) {
+    printf("SIGBUS caught!\n");
     if (info->si_code == BUS_ADRERR) {
-        printf("Помилка SIGBUS: Невірна адреса (фізична пам’ять), адреса: %p\n", info->si_addr);
+        printf("BUS_ADRERR: invalid address alignment.\n");
     } else if (info->si_code == BUS_OBJERR) {
-        printf("Помилка SIGBUS: Помилка об’єкта (mmap), адреса: %p\n", info->si_addr);
+        printf("BUS_OBJERR: hardware error accessing object (file I/O).\n");
     } else {
-        printf("Невідома помилка SIGBUS, адреса: %p\n", info->si_addr);
+        printf("Other SIGBUS cause: si_code = %d\n", info->si_code);
     }
-    exit(1);
+    exit(EXIT_FAILURE);
 }
 
 int main() {
-    struct sigaction sa;
-    sa.sa_sigaction = sigbus_handler;
-    sa.sa_flags = SA_SIGINFO;
-    sigemptyset(&sa.sa_mask);
-    if (sigaction(SIGBUS, &sa, NULL) == -1) {
-        perror("Помилка встановлення обробника");
+    const char *filename = "test_file.txt";
+    int fd = open(filename, O_RDWR | O_CREAT, 0666);
+    if (fd < 0) {
+        perror("open");
         return 1;
     }
 
-    int fd = open("test.txt", O_RDWR | O_CREAT | O_TRUNC, 0644);
-    if (fd == -1) {
-        perror("Помилка відкриття файлу");
+    const char *content = "Test content\n";
+    if (write(fd, content, strlen(content)) < 0) {
+        perror("write");
         return 1;
     }
-    write(fd, "123", 3); // Записуємо 3 байти
-    ftruncate(fd, 3); // Обмежуємо розмір файлу до 3 байтів
-    void *addr = mmap(NULL, 512, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0); // Менший розмір
-    if (addr == MAP_FAILED) {
-        perror("Помилка mmap");
-        close(fd);
+
+    ftruncate(fd, 0);
+
+    struct sigaction sa;
+    sa.sa_sigaction = sigbus_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = SA_SIGINFO;
+
+    if (sigaction(SIGBUS, &sa, NULL) == -1) {
+        perror("sigaction");
         return 1;
     }
-    printf("Відображено: %p\n", addr);
-    char *p = (char *)addr;
-    p[0] = 'A'; // Доступ до валідної пам’яті
-    printf("Записано: %c\n", p[0]);
-    p[4] = 'B'; // Спроба запису за межами (викликає SIGBUS)
+
+    char *map = mmap(NULL, 4096, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+    if (map == MAP_FAILED) {
+        perror("mmap");
+        return 1;
+    }
+
+    printf("Trying to write to mapped memory...\n");
+    map[0] = 'X';
+
+    munmap(map, 4096);
     close(fd);
     return 0;
 }
