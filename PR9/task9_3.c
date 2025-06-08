@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
-
+#include <string.h>  
+#include <errno.h>   
 int main() {
     const char *source = "user_temp.txt";
     const char *dest = "/home/san/copied_temp.txt";
