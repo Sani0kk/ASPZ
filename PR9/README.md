@@ -42,7 +42,7 @@ int main() {
 
 ## Завдання 9.2: Виконання cat /etc/shadow від імені адміністратора
 ### Опис
-Програма намагається стати root через `setuid(0)` і виводить вміст `/etc/shadow`. Потрібен доступ root або налаштування sudo.
+Програма використовує `sudo` для запуску команди `cat /etc/master.passwd` (замість `/etc/shadow`, який у FreeBSD не використовується) і показує вміст файлу з паролями. Їй потрібен доступ root, і вона попросить твій пароль, якщо налаштовано так у `sudoers`. Якщо прав немає, з’явиться помилка.
 ### Код
 ```c
 #include <stdio.h>
@@ -50,18 +50,9 @@ int main() {
 #include <unistd.h>
 
 int main() {
-    if (setuid(0) == -1) {
-        fprintf(stderr, "Помилка: не вдалося отримати права root. Перевірте sudo.\n");
-        exit(EXIT_FAILURE);
-    }
-    if (getuid() != 0) {
-        fprintf(stderr, "Помилка: немає доступу до root.\n");
-        exit(EXIT_FAILURE);
-    }
-
-    FILE *fp = popen("cat /etc/shadow", "r");
+    FILE *fp = popen("sudo cat /etc/master.passwd", "r");
     if (fp == NULL) {
-        perror("Помилка виконання popen");
+        perror("Помилка при виконанні popen");
         exit(EXIT_FAILURE);
     }
 
@@ -75,7 +66,8 @@ int main() {
 }
 ```
 ### Скріншот виконання
-![Скріншот завдання 9.2](task9_2_screenshot.png)
+![image](https://github.com/user-attachments/assets/689ab922-553b-48f6-b34d-f8045f48731b)
+![image](https://github.com/user-attachments/assets/576ea6b6-70a0-468d-aa79-b2dea620a739)
 
 ## Завдання 9.3: Копіювання файлу від root у домашній каталог
 ### Опис
